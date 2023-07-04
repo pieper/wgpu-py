@@ -32,7 +32,7 @@ else:
     try:
         from .glfw import WgpuCanvas, run, call_later  # noqa
     except ImportError as glfw_err:
-        qt_backends = ("PySide6", "PyQt6", "PySide2", "PyQt5")
+        qt_backends = ("PySide6", "PyQt6", "PySide2", "PyQt5", "qt")
         for backend in qt_backends:
             if backend in sys.modules:
                 break
