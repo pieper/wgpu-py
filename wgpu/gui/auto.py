@@ -175,6 +175,7 @@ def backends_by_trying_in_order():
         "PyQt6": "qt",
         "PySide2": "qt",
         "PyQt5": "qt",
+        "qt": "qt",
         # "wx": "wx",
     }
 

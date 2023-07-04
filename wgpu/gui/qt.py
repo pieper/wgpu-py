@@ -17,6 +17,7 @@ from ._gui_utils import (
     get_imported_qt_lib,
 )
 
+UsingPythonQt = False
 
 # Select GUI toolkit
 libname, already_had_app_on_import = get_imported_qt_lib()
@@ -41,9 +42,20 @@ if libname:
         FocusPolicy = QtCore.Qt
         Keys = QtCore.Qt
 else:
-    raise ImportError(
-        "Before importing wgpu.gui.qt, import one of PySide6/PySide2/PyQt6/PyQt5 to select a Qt toolkit."
-    )
+    if "qt" in sys.modules:
+        import qt
+        print("using PythonQt")
+        UsingPythonQt = True
+        QtCore = qt
+        QtWidgets = qt
+        WA_PaintOnScreen = qt.Qt.WA_PaintOnScreen
+        PreciseTimer = qt.Qt.PreciseTimer
+        FocusPolicy = qt.Qt
+        Keys = qt.Qt
+    else:
+        raise ImportError(
+            "Before importing wgpu.gui.qt, import one of PySide6/PySide2/PyQt6/PyQt5/PythonQt to select a Qt toolkit."
+        )
 
 
 # Get version
@@ -56,23 +68,42 @@ else:
         qt_version_info = (0, 0, 0)
 
 
-BUTTON_MAP = {
-    QtCore.Qt.MouseButton.LeftButton: 1,  # == MOUSE_BUTTON_LEFT
-    QtCore.Qt.MouseButton.RightButton: 2,  # == MOUSE_BUTTON_RIGHT
-    QtCore.Qt.MouseButton.MiddleButton: 3,  # == MOUSE_BUTTON_MIDDLE
-    QtCore.Qt.MouseButton.BackButton: 4,
-    QtCore.Qt.MouseButton.ForwardButton: 5,
-    QtCore.Qt.MouseButton.TaskButton: 6,
-    QtCore.Qt.MouseButton.ExtraButton4: 7,
-    QtCore.Qt.MouseButton.ExtraButton5: 8,
-}
+if UsingPythonQt:
+    BUTTON_MAP = {
+        qt.Qt.LeftButton: 1,  # == MOUSE_BUTTON_LEFT
+        qt.Qt.RightButton: 2,  # == MOUSE_BUTTON_RIGHT
+        qt.Qt.MiddleButton: 3,  # == MOUSE_BUTTON_MIDDLE
+        qt.Qt.BackButton: 4,
+        qt.Qt.ForwardButton: 5,
+        qt.Qt.TaskButton: 6,
+        qt.Qt.ExtraButton4: 7,
+        qt.Qt.ExtraButton5: 8,
+    }
 
-MODIFIERS_MAP = {
-    KeyboardModifiers.ShiftModifier: "Shift",
-    KeyboardModifiers.ControlModifier: "Control",
-    KeyboardModifiers.AltModifier: "Alt",
-    KeyboardModifiers.MetaModifier: "Meta",
-}
+    MODIFIERS_MAP = {
+        qt.Qt.ShiftModifier: "Shift",
+        qt.Qt.ControlModifier: "Control",
+        qt.Qt.AltModifier: "Alt",
+        qt.Qt.MetaModifier: "Meta",
+    }
+else:
+    BUTTON_MAP = {
+        QtCore.Qt.MouseButton.LeftButton: 1,  # == MOUSE_BUTTON_LEFT
+        QtCore.Qt.MouseButton.RightButton: 2,  # == MOUSE_BUTTON_RIGHT
+        QtCore.Qt.MouseButton.MiddleButton: 3,  # == MOUSE_BUTTON_MIDDLE
+        QtCore.Qt.MouseButton.BackButton: 4,
+        QtCore.Qt.MouseButton.ForwardButton: 5,
+        QtCore.Qt.MouseButton.TaskButton: 6,
+        QtCore.Qt.MouseButton.ExtraButton4: 7,
+        QtCore.Qt.MouseButton.ExtraButton5: 8,
+    }
+
+    MODIFIERS_MAP = {
+        KeyboardModifiers.ShiftModifier: "Shift",
+        KeyboardModifiers.ControlModifier: "Control",
+        KeyboardModifiers.AltModifier: "Alt",
+        KeyboardModifiers.MetaModifier: "Meta",
+    }
 
 KEY_MAP = {
     int(Keys.Key_Down): "ArrowDown",
@@ -140,7 +171,8 @@ def enable_hidpi():
 # on high-res monitors. So we apply the minimal configuration to make this so.
 # Most apps probably should also set AA_UseHighDpiPixmaps, but it's not
 # needed for wgpu, so not our responsibility (some users may NOT want it set).
-enable_hidpi()
+if not UsingPythonQt:
+    enable_hidpi()
 
 _show_image_method_warning = (
     "Qt falling back to offscreen rendering, which is less performant."
@@ -245,7 +277,10 @@ class QWgpuWidget(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
     def get_physical_size(self):
         # https://doc.qt.io/qt-5/qpaintdevice.html
         # https://doc.qt.io/qt-5/highdpi.html
-        lsize = self.width(), self.height()
+        if UsingPythonQt:
+            lsize = self.width, self.height
+        else:
+            lsize = self.width(), self.height()
         lsize = float(lsize[0]), float(lsize[1])
         ratio = self.devicePixelRatioF()
 
