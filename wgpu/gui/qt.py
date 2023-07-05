@@ -271,7 +271,10 @@ class QWgpuWidget(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
 
     def get_logical_size(self):
         # Sizes in Qt are logical
-        lsize = self.width(), self.height()
+        if UsingPythonQt:
+            lsize = self.width, self.height
+        else:
+            lsize = self.width(), self.height()
         return float(lsize[0]), float(lsize[1])
 
     def get_physical_size(self):
