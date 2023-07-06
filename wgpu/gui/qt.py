@@ -18,6 +18,7 @@ from ._gui_utils import (
 )
 
 UsingPythonQt = False
+QtMajorVersion = 6
 
 # Select GUI toolkit
 libname, already_had_app_on_import = get_imported_qt_lib()
@@ -46,6 +47,7 @@ else:
         import qt
         print("using PythonQt")
         UsingPythonQt = True
+        QtMajorVersion = 5
         QtCore = qt
         QtWidgets = qt
         WA_PaintOnScreen = qt.Qt.WA_PaintOnScreen
@@ -216,6 +218,16 @@ class QWgpuWidget(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
         self._request_draw_timer.setSingleShot(True)
         self._request_draw_timer.timeout.connect(self.update)
 
+        try:
+            import slicer
+            try:
+                slicer.modules._wgpuwidgets
+            except AttributeError:
+                slicer.modules._wgpuwidgets = []
+            slicer.modules._wgpuwidgets.append(self)
+        except ModuleNotFoundError:
+            pass
+
     def paintEngine(self):  # noqa: N802 - this is a Qt method
         # https://doc.qt.io/qt-5/qt.html#WidgetAttribute-enum  WA_PaintOnScreen
         if self._present_to_screen:
@@ -271,7 +283,7 @@ class QWgpuWidget(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
 
     def get_logical_size(self):
         # Sizes in Qt are logical
-        if UsingPythonQt:
+        if QtMajorVersion == 5:
             lsize = self.width, self.height
         else:
             lsize = self.width(), self.height()
@@ -280,7 +292,7 @@ class QWgpuWidget(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
     def get_physical_size(self):
         # https://doc.qt.io/qt-5/qpaintdevice.html
         # https://doc.qt.io/qt-5/highdpi.html
-        if UsingPythonQt:
+        if QtMajorVersion == 5:
             lsize = self.width, self.height
         else:
             lsize = self.width(), self.height()
@@ -364,10 +376,17 @@ class QWgpuWidget(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
             if mod & event.modifiers()
         )
 
+        if QtMajorVersion == 5:
+            x = event.pos().x()
+            y = event.pos().y()
+        else:
+            x = event.position().x()
+            y = event.position().y()
+
         ev = {
             "event_type": event_type,
-            "x": event.pos().x(),
-            "y": event.pos().y(),
+            "x": x,
+            "y": y,
             "button": button,
             "buttons": buttons,
             "modifiers": modifiers,
@@ -413,13 +432,20 @@ class QWgpuWidget(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
             if button & event.buttons()
         )
 
+        if QtMajorVersion == 5:
+            x = event.pos().x()
+            y = event.pos().y()
+        else:
+            x = event.position().x()
+            y = event.position().y()
+
         ev = {
             "event_type": "wheel",
             "dx": -event.angleDelta().x(),
             "dy": -event.angleDelta().y(),
-            "x": event.position().x(),
-            "y": event.position().y(),
             "buttons": buttons,
+            "x": x,
+            "y": y,
             "modifiers": modifiers,
         }
         match_keys = {"modifiers"}
@@ -508,6 +534,16 @@ class QWgpuCanvas(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
         layout.addWidget(self._subwidget)
 
         self.show()
+
+        try:
+            import slicer
+            try:
+                slicer.modules._wgpuwidgets
+            except AttributeError:
+                slicer.modules._wgpuwidgets = []
+            slicer.modules._wgpuwidgets.append(self)
+        except ModuleNotFoundError:
+            pass
 
     # Qt methods
 

@@ -10,7 +10,6 @@ Steps for testing:
 * run /path/to/PythonSlicer -m pip install .
 
 Then paste this in the Python console to try out some demos:
->>>>>>> 92a5414 (Add readme info for this fork)
 ```
 import glob
 
