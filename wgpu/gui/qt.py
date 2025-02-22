@@ -23,6 +23,7 @@ QtMajorVersion = 6
 # Select GUI toolkit
 if "qt" in sys.modules:
     import qt
+    libname = "qt"
     print("using PythonQt")
     UsingPythonQt = True
     QtMajorVersion = 5
