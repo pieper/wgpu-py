@@ -22,7 +22,7 @@ QtMajorVersion = 6
 
 # Select GUI toolkit
 libname, already_had_app_on_import = get_imported_qt_lib()
-if libname:
+if libname != "qt":
     QtCore = importlib.import_module(".QtCore", libname)
     QtGui = importlib.import_module(".QtGui", libname)
     QtWidgets = importlib.import_module(".QtWidgets", libname)

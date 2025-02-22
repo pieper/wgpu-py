@@ -43,6 +43,7 @@ def get_imported_qt_lib():
             app = QtWidgets.QApplication.instance()
             if app is not None:
                 imported_libs_with_app.append(libname)
+    print(f"imported_libs_with_app: {imported_libs_with_app}")
 
     # Return findings
     if imported_libs_with_app:
