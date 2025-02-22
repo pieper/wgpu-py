@@ -21,43 +21,42 @@ UsingPythonQt = False
 QtMajorVersion = 6
 
 # Select GUI toolkit
-libname, already_had_app_on_import = get_imported_qt_lib()
-if libname != "qt":
-    QtCore = importlib.import_module(".QtCore", libname)
-    QtGui = importlib.import_module(".QtGui", libname)
-    QtWidgets = importlib.import_module(".QtWidgets", libname)
-    try:
-        WA_PaintOnScreen = QtCore.Qt.WidgetAttribute.WA_PaintOnScreen
-        WA_DeleteOnClose = QtCore.Qt.WidgetAttribute.WA_DeleteOnClose
-        WA_InputMethodEnabled = QtCore.Qt.WidgetAttribute.WA_InputMethodEnabled
-        PreciseTimer = QtCore.Qt.TimerType.PreciseTimer
-        KeyboardModifiers = QtCore.Qt.KeyboardModifier
-        FocusPolicy = QtCore.Qt.FocusPolicy
-        Keys = QtCore.Qt.Key
-    except AttributeError:
-        WA_PaintOnScreen = QtCore.Qt.WA_PaintOnScreen
-        WA_DeleteOnClose = QtCore.Qt.WA_DeleteOnClose
-        WA_InputMethodEnabled = QtCore.Qt.WA_InputMethodEnabled
-        PreciseTimer = QtCore.Qt.PreciseTimer
-        KeyboardModifiers = QtCore.Qt
-        FocusPolicy = QtCore.Qt
-        Keys = QtCore.Qt
+if "qt" in sys.modules:
+    import qt
+    print("using PythonQt")
+    UsingPythonQt = True
+    QtMajorVersion = 5
+    QtCore = qt
+    QtGui = qt
+    QtWidgets = qt
+    FocusPolicy = qt.Qt
+    Keys = qt.Qt
 else:
-    if "qt" in sys.modules:
-        import qt
-        print("using PythonQt")
-        UsingPythonQt = True
-        QtMajorVersion = 5
-        QtCore = qt
-        QtWidgets = qt
-        WA_PaintOnScreen = qt.Qt.WA_PaintOnScreen
-        PreciseTimer = qt.Qt.PreciseTimer
-        FocusPolicy = qt.Qt
-        Keys = qt.Qt
-    else:
-        raise ImportError(
-            "Before importing wgpu.gui.qt, import one of PySide6/PySide2/PyQt6/PyQt5/PythonQt to select a Qt toolkit."
-        )
+    libname, already_had_app_on_import = get_imported_qt_lib()
+    if libname:
+        QtCore = importlib.import_module(".QtCore", libname)
+        QtGui = importlib.import_module(".QtGui", libname)
+        QtWidgets = importlib.import_module(".QtWidgets", libname)
+try:
+    WA_PaintOnScreen = QtCore.Qt.WidgetAttribute.WA_PaintOnScreen
+    WA_DeleteOnClose = QtCore.Qt.WidgetAttribute.WA_DeleteOnClose
+    WA_InputMethodEnabled = QtCore.Qt.WidgetAttribute.WA_InputMethodEnabled
+    PreciseTimer = QtCore.Qt.TimerType.PreciseTimer
+    KeyboardModifiers = QtCore.Qt.KeyboardModifier
+    FocusPolicy = QtCore.Qt.FocusPolicy
+    Keys = QtCore.Qt.Key
+except AttributeError:
+    WA_PaintOnScreen = QtCore.Qt.WA_PaintOnScreen
+    WA_DeleteOnClose = QtCore.Qt.WA_DeleteOnClose
+    WA_InputMethodEnabled = QtCore.Qt.WA_InputMethodEnabled
+    PreciseTimer = QtCore.Qt.PreciseTimer
+    KeyboardModifiers = QtCore.Qt.KeyboardModifiers
+    FocusPolicy = QtCore.Qt.FocusPolicy
+    Keys = QtCore.Qt
+else:
+    raise ImportError(
+        "Before importing wgpu.gui.qt, import one of PySide6/PySide2/PyQt6/PyQt5/PythonQt to select a Qt toolkit."
+    )
 
 
 # Get version
