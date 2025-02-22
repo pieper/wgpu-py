@@ -51,8 +51,8 @@ except AttributeError:
     WA_DeleteOnClose = QtCore.Qt.WA_DeleteOnClose
     WA_InputMethodEnabled = QtCore.Qt.WA_InputMethodEnabled
     PreciseTimer = QtCore.Qt.PreciseTimer
-    KeyboardModifiers = QtCore.Qt.KeyboardModifiers
-    FocusPolicy = QtCore.Qt.FocusPolicy
+    KeyboardModifiers = QtCore.Qt
+    FocusPolicy = QtCore.Qt
     Keys = QtCore.Qt
 else:
     raise ImportError(
