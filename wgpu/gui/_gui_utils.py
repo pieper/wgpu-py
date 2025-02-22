@@ -15,7 +15,7 @@ logger = logging.getLogger("wgpu")
 
 # ===== GUI lib support
 
-QT_MODULE_NAMES = ["PySide6", "PyQt6", "PySide2", "PyQt5"]
+QT_MODULE_NAMES = ["PySide6", "PyQt6", "PySide2", "PyQt5", "qt"]
 
 
 def get_imported_qt_lib():
@@ -30,11 +30,15 @@ def get_imported_qt_lib():
         qtlib = sys.modules.get(libname, None)
         if qtlib is not None:
             imported_libs.append(libname)
+    print(f"imported_libs: {imported_libs}")
 
     # Get which of these have an application object
     imported_libs_with_app = []
     for libname in imported_libs:
         QtWidgets = sys.modules.get(libname + ".QtWidgets", None)  # noqa: N806
+        if not QtWidgets:
+            QtWidgets = sys.modules.get(libname, None) # for PythonQt in Slicer
+        print(f"trying {libname}, found {QtWidgets}")
         if QtWidgets:
             app = QtWidgets.QApplication.instance()
             if app is not None:

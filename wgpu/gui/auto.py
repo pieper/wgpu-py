@@ -180,6 +180,7 @@ def backends_by_trying_in_order():
     }
 
     for libname, backend_name in gui_lib_to_backend.items():
+        print(f"trying {libname}, {backend_name}")
         try:
             importlib.import_module(libname)
         except ModuleNotFoundError:
