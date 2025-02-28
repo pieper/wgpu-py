@@ -46,7 +46,6 @@ def select_backend():
         if backend_name in failed_backends:
             continue
         try:
-            print(f"in select_backend, trying to load {backend_name}")
             module = _load_backend(backend_name)
             break
         except Exception as err:
@@ -181,12 +180,10 @@ def backends_by_trying_in_order():
     }
 
     for libname, backend_name in gui_lib_to_backend.items():
-        print(f"trying {libname}, {backend_name}")
         try:
             importlib.import_module(libname)
         except ModuleNotFoundError:
             continue
-        print(f"Found {backend_name}")
         yield backend_name, f"{libname} can be imported"
 
 
