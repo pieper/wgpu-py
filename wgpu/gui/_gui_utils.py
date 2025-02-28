@@ -36,7 +36,7 @@ def get_imported_qt_lib():
     for libname in imported_libs:
         QtWidgets = sys.modules.get(libname + ".QtWidgets", None)  # noqa: N806
         if not QtWidgets:
-            QtWidgets = sys.modules.get(libname, None) # for PythonQt in Slicer
+            QtWidgets = sys.modules.get(libname, None) # for PythonQt in Slicer # noqa: N806
         if QtWidgets:
             app = QtWidgets.QApplication.instance()
             if app is not None:

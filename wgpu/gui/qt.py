@@ -222,7 +222,7 @@ class QWgpuWidget(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
         try:
             import slicer
             try:
-                slicer.modules._wgpuwidgets
+                _wgpuwidgets = slicer.modules._wgpuwidgets
             except AttributeError:
                 slicer.modules._wgpuwidgets = []
             slicer.modules._wgpuwidgets.append(self)
@@ -539,7 +539,7 @@ class QWgpuCanvas(WgpuAutoGui, WgpuCanvasBase, QtWidgets.QWidget):
         try:
             import slicer
             try:
-                slicer.modules._wgpuwidgets
+                _wgpuwidgets = slicer.modules._wgpuwidgets
             except AttributeError:
                 slicer.modules._wgpuwidgets = []
             slicer.modules._wgpuwidgets.append(self)
